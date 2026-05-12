@@ -12,3 +12,15 @@ By leveraging the familiar architecture of Excel Collections and Scripting Runti
 Whether you are fetching real-time data from a modern REST API in JSON format or retrieving structured data from a legacy XML web service, these tools eliminate the need for manual string parsing or "Regex" hacking.
 
 By converting these formats into native Dictionaries and Collections, the Add-in provides a "plug-and-play" experience. You can iterate through data, access specific nodes by name, and manage configuration settings using the standard coding patterns you already know, significantly reducing development time and increasing code reliability.
+
+## Installation & Usage
+
+1. Download the Release files.
+2. Unzip and unblock DataConverter v1.1.xlam
+3. Move the add-in into the %AppData%\Microsoft\Addins folder
+4. Import the required components into your VBA Project.
+5. Start using the JsonConverter, XMLConverter and IniConverter Classes.
+
+## License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.

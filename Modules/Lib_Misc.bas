@@ -65,36 +65,36 @@ Public Function DictToString(DictIn As Scripting.Dictionary, OutputType As Strin
     Dim Opt As Variant, ValD As Variant
 
     If DictIn Is Nothing Then
-        DictToString = ""
-        Exit Function
+	DictToString = ""
+	Exit Function
     End If
 
     If OutputType = "JSON" Then
-        OutputTxt = "{"
-        For Each Opt In DictIn.Keys()
-            If OutputTxt <> "{" Then OutputTxt = OutputTxt & ","
-            'If a string came in, put double quotes around it
-            ValD = DictIn(Opt)
-            Separ = ""
-            If VarType(ValD) = vbString Then Separ = """"
+	OutputTxt = "{"
+	For Each Opt In DictIn.Keys()
+	    If OutputTxt <> "{" Then OutputTxt = OutputTxt & ","
+	    'If a string came in, put double quotes around it
+	    ValD = DictIn(Opt)
+	    Separ = ""
+	    If VarType(ValD) = vbString Then Separ = """"
 
-            'Value: correct for comma decimal system if a value was supplied
-            ValStr = ValD
-            If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
-            OutputTxt = OutputTxt & """" & Opt & """" & ":" & Separ & ValStr & Separ
-        Next
-        OutputTxt = OutputTxt & "}"
+	    'Value: correct for comma decimal system if a value was supplied
+	    ValStr = ValD
+	    If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
+	    OutputTxt = OutputTxt & """" & Opt & """" & ":" & Separ & ValStr & Separ
+	Next
+	OutputTxt = OutputTxt & "}"
     ElseIf OutputType = "URLENC" Then
-        OutputTxt = ""
-        For Each Opt In DictIn.Keys()
-            If OutputTxt <> "" Then OutputTxt = OutputTxt & "&"
-            ValD = DictIn(Opt)
-            ValStr = ValD
-            If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
-            OutputTxt = OutputTxt & Opt & "=" & ValStr
-        Next
+	OutputTxt = ""
+	For Each Opt In DictIn.Keys()
+	    If OutputTxt <> "" Then OutputTxt = OutputTxt & "&"
+	    ValD = DictIn(Opt)
+	    ValStr = ValD
+	    If VarType(ValD) <> vbString Then ValStr = Replace(ValStr, ",", ".")
+	    OutputTxt = OutputTxt & Opt & "=" & ValStr
+	Next
     Else
-        OutputTxt = "UNKNOWN_TYPE"
+	OutputTxt = "UNKNOWN_TYPE"
     End If
 
     DictToString = OutputTxt
@@ -112,24 +112,24 @@ Public Sub SortDictByKey(DictIn As Scripting.Dictionary, Optional SortAsc As Boo
     Dim Key As Variant, va As Variant
 
     If DictIn Is Nothing Then
-        Exit Sub
+	Exit Sub
     End If
     If DictIn.Count <= 1 Then
-        Exit Sub
+	Exit Sub
     End If
 
     Set ArrayList = CreateObject("System.Collections.ArrayList")
 
     For Each Key In DictIn.Keys
-        ArrayList.Add Key
+	ArrayList.Add Key
     Next Key
     ArrayList.Sort
     If SortAsc = False Then
-        ArrayList.Reverse
+	ArrayList.Reverse
     End If
 
     For Each va In ArrayList
-        ResDict.Add va, DictIn(va)
+	ResDict.Add va, DictIn(va)
     Next va
 
     Set DictIn = ResDict

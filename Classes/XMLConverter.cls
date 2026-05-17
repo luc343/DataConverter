@@ -78,7 +78,7 @@ Public Function Parse(ByVal XMLString As String) As Object  'Scripting.Dictionar
 
     On Error GoTo Err
     If Mid$(XMLStr, Idx, 1) <> "<" Then
-        Err.Raise 120, "XMLConverter", ErrorStr("Expecting '<'")     'Error: Invalid XML string
+	Err.Raise 120, "XMLConverter", ErrorStr("Expecting '<'")     'Error: Invalid XML string
     End If
 
     Set Parse = New Scripting.Dictionary
@@ -87,8 +87,8 @@ Public Function Parse(ByVal XMLString As String) As Object  'Scripting.Dictionar
     Parse.Add "doctype", ParseDoctype()         'only one DOCTYPE allowed
 
     While Idx <= XMLLen
-        Parse.Add ELEMENT & 1, ParseElement()
-        SkipSpaces
+	Parse.Add ELEMENT & 1, ParseElement()
+	SkipSpaces
     Wend
     On Error GoTo 0
     Exit Function
@@ -118,7 +118,7 @@ Public Function ParseFile(ByVal filePath As String) As Object
 
     On Error GoTo Err
     If Not FileExists(filePath) Then
-        Err.Raise 121, "XMLConverter", "Path '" & filePath & "' not found!"
+	Err.Raise 121, "XMLConverter", "Path '" & filePath & "' not found!"
     End If
     On Error GoTo 0
 
@@ -155,29 +155,29 @@ Private Function ParseProlog() As String
     SkipSpaces
 
     If Mid$(XMLStr, Idx, 2) = "<?" Then
-        pos = Idx
-        Idx = Idx + 2
+	pos = Idx
+	Idx = Idx + 2
 
-        Do
-            Chars = Mid$(XMLStr, Idx, 2)
+	Do
+	    Chars = Mid$(XMLStr, Idx, 2)
 
-            If Idx + 1 > XMLLen Then
-                Err.Raise 122, "XMLConverter", ErrorStr("Expecting '?>'")
-            ElseIf OpeningLevel = 0 And Chars = "?>" Then
-                Idx = Idx + 2
-                Exit Do     'found matching closing tag, ?>
-            ElseIf Chars = "<?" Then
-                OpeningLevel = OpeningLevel + 1
-                Idx = Idx + 2
-            ElseIf Chars = "?>" Then
-                OpeningLevel = OpeningLevel - 1
-                Idx = Idx + 2
-            Else
-                Idx = Idx + 1
-            End If
-        Loop
+	    If Idx + 1 > XMLLen Then
+		Err.Raise 122, "XMLConverter", ErrorStr("Expecting '?>'")
+	    ElseIf OpeningLevel = 0 And Chars = "?>" Then
+		Idx = Idx + 2
+		Exit Do     'found matching closing tag, ?>
+	    ElseIf Chars = "<?" Then
+		OpeningLevel = OpeningLevel + 1
+		Idx = Idx + 2
+	    ElseIf Chars = "?>" Then
+		OpeningLevel = OpeningLevel - 1
+		Idx = Idx + 2
+	    Else
+		Idx = Idx + 1
+	    End If
+	Loop
 
-        ParseProlog = Mid$(XMLStr, pos, Idx - pos)
+	ParseProlog = Mid$(XMLStr, pos, Idx - pos)
     End If
 End Function
 
@@ -187,25 +187,25 @@ Private Function ParseDoctype() As String
 
     SkipSpaces
     If Mid$(XMLStr, Idx, 2) = "<!" Then
-        pos = Idx
-        Idx = Idx + 2
+	pos = Idx
+	Idx = Idx + 2
 
-        Do
-            Ch = Mid$(XMLStr, Idx, 1)
-            Idx = Idx + 1
+	Do
+	    Ch = Mid$(XMLStr, Idx, 1)
+	    Idx = Idx + 1
 
-            If Idx > XMLLen Then
-                Err.Raise 123, "XMLConverter", ErrorStr("Expecting '>'")
-            ElseIf OpeningLevel = 0 And Ch = ">" Then
-                Exit Do     'found matching closing tag, >
-            ElseIf Ch = "<" Then
-                OpeningLevel = OpeningLevel + 1
-            ElseIf Ch = ">" Then
-                OpeningLevel = OpeningLevel - 1
-            End If
-        Loop
+	    If Idx > XMLLen Then
+		Err.Raise 123, "XMLConverter", ErrorStr("Expecting '>'")
+	    ElseIf OpeningLevel = 0 And Ch = ">" Then
+		Exit Do     'found matching closing tag, >
+	    ElseIf Ch = "<" Then
+		OpeningLevel = OpeningLevel + 1
+	    ElseIf Ch = ">" Then
+		OpeningLevel = OpeningLevel - 1
+	    End If
+	Loop
 
-        ParseDoctype = Mid$(XMLStr, pos, Idx - pos)
+	ParseDoctype = Mid$(XMLStr, pos, Idx - pos)
     End If
 End Function
 
@@ -219,28 +219,28 @@ Private Function ParseElement() As Scripting.Dictionary
     SkipSpaces
 
     Do
-        If Mid$(XMLStr, Idx, 1) <> "<" Then
-            Err.Raise 124, "XMLConverter", ErrorStr("Expecting '<'")
-        End If
-        Idx = Idx + 1   'skip '<'
+	If Mid$(XMLStr, Idx, 1) <> "<" Then
+	    Err.Raise 124, "XMLConverter", ErrorStr("Expecting '<'")
+	End If
+	Idx = Idx + 1   'skip '<'
 
-        If Idx > XMLLen Then
-            Err.Raise 125, "XMLConverter", ErrorStr("Expecting '--', 'DOCTYPE', '[CDATA[' or 'ENTITY'")
-        ElseIf Mid$(XMLStr, Idx, 1) = "!" Then
-            If Mid$(XMLStr, Idx + 1, 2) = "--" Then             'skip comments
-                pos = InStr(Idx + 3, XMLStr, "-->")
-                If pos > 0 Then
-                    Idx = pos + 3
-                    SkipSpaces
-                Else
-                    Err.Raise 126, "XMLConverter", ErrorStr("Expecting '-->'")
-                End If
-            Else
-                Err.Raise 127, "XMLConverter", ErrorStr("Expecting '--', 'DOCTYPE', '[CDATA[' or 'ENTITY'")
-            End If
-        Else
-            Exit Do
-        End If
+	If Idx > XMLLen Then
+	    Err.Raise 125, "XMLConverter", ErrorStr("Expecting '--', 'DOCTYPE', '[CDATA[' or 'ENTITY'")
+	ElseIf Mid$(XMLStr, Idx, 1) = "!" Then
+	    If Mid$(XMLStr, Idx + 1, 2) = "--" Then             'skip comments
+		pos = InStr(Idx + 3, XMLStr, "-->")
+		If pos > 0 Then
+		    Idx = pos + 3
+		    SkipSpaces
+		Else
+		    Err.Raise 126, "XMLConverter", ErrorStr("Expecting '-->'")
+		End If
+	    Else
+		Err.Raise 127, "XMLConverter", ErrorStr("Expecting '--', 'DOCTYPE', '[CDATA[' or 'ENTITY'")
+	    End If
+	Else
+	    Exit Do
+	End If
     Loop
 
     TagName = ParseStartTag()                                       'parse start tag
@@ -249,41 +249,41 @@ Private Function ParseElement() As Scripting.Dictionary
     ParseElement.Add ATTRIBS, ParseAttributes()                     'parse attributes
 
     If Mid$(XMLStr, Idx, 2) = "/>" Then
-        Idx = Idx + 2       'skip over closing '/>'
-        ParseElement.Add CONTENT, ""
+	Idx = Idx + 2       'skip over closing '/>'
+	ParseElement.Add CONTENT, ""
 
     ElseIf Mid$(XMLStr, Idx, 1) = ">" Then
-        Idx = Idx + 1       'skip over '>'
-        ParseElement.Add CONTENT, ParseContent()                    'parse content
+	Idx = Idx + 1       'skip over '>'
+	ParseElement.Add CONTENT, ParseContent()                    'parse content
 
-        Do
-            If Idx > XMLLen Then
-                Err.Raise 128, "XMLConverter", ErrorStr("Expecting '<' or '</'")
-            ElseIf Mid$(XMLStr, Idx, 2) = "</" Then
-                Idx = Idx + 2
+	Do
+	    If Idx > XMLLen Then
+		Err.Raise 128, "XMLConverter", ErrorStr("Expecting '<' or '</'")
+	    ElseIf Mid$(XMLStr, Idx, 2) = "</" Then
+		Idx = Idx + 2
 
-                If TagName <> ParseEndTag() Then                        'parse end tag
-                    Err.Raise 129, "XMLConverter", ErrorStr("Expecting '</" & TagName & ">'")
-                End If
+		If TagName <> ParseEndTag() Then                        'parse end tag
+		    Err.Raise 129, "XMLConverter", ErrorStr("Expecting '</" & TagName & ">'")
+		End If
 
-                If Mid$(XMLStr, Idx, 1) = ">" Then
-                    Idx = Idx + 1
-                Else
-                    Err.Raise 130, "XMLConverter", ErrorStr("Expecting '>'")
-                End If
-                Exit Do
-            ElseIf Mid$(XMLStr, Idx, 1) = "<" Then
-                ParseElement.Add ELEMENT & elnum, ParseElement()        'parse element
-                elnum = elnum + 1
-                SkipSpaces
+		If Mid$(XMLStr, Idx, 1) = ">" Then
+		    Idx = Idx + 1
+		Else
+		    Err.Raise 130, "XMLConverter", ErrorStr("Expecting '>'")
+		End If
+		Exit Do
+	    ElseIf Mid$(XMLStr, Idx, 1) = "<" Then
+		ParseElement.Add ELEMENT & elnum, ParseElement()        'parse element
+		elnum = elnum + 1
+		SkipSpaces
 
-                'continue loop
-            Else
-                Err.Raise 131, "XMLConverter", ErrorStr("Expecting '<' or '</'")
-            End If
-        Loop
+		'continue loop
+	    Else
+		Err.Raise 131, "XMLConverter", ErrorStr("Expecting '<' or '</'")
+	    End If
+	Loop
     Else
-        Err.Raise 132, "XMLConverter", ErrorStr("Expecting '>' or '/>'")
+	Err.Raise 132, "XMLConverter", ErrorStr("Expecting '>' or '/>'")
     End If
 Done:
 End Function
@@ -294,26 +294,26 @@ Private Function ParseStartTag() As Variant
 
     pos = Idx
     Do
-        Ch = Mid$(XMLStr, Idx, 1)
+	Ch = Mid$(XMLStr, Idx, 1)
 
-        Select Case Ch
-        Case "<"
-            Err.Raise 133, "XMLConverter", ErrorStr("Expecting ' ' or '>'")
-        Case " ", ">"
-            ParseStartTag = Mid$(XMLStr, pos, Idx - pos)
+	Select Case Ch
+	Case "<"
+	    Err.Raise 133, "XMLConverter", ErrorStr("Expecting ' ' or '>'")
+	Case " ", ">"
+	    ParseStartTag = Mid$(XMLStr, pos, Idx - pos)
 
-            SkipSpaces
-            Exit Do
-        Case Else
-            If Not IsValidName(Ch, Idx - pos + 1) Then
-                Err.Raise 134, "XMLConverter", ErrorStr("Invalid Character '" & Ch & "'")
-            End If
-            Idx = Idx + 1
-        End Select
+	    SkipSpaces
+	    Exit Do
+	Case Else
+	    If Not IsValidName(Ch, Idx - pos + 1) Then
+		Err.Raise 134, "XMLConverter", ErrorStr("Invalid Character '" & Ch & "'")
+	    End If
+	    Idx = Idx + 1
+	End Select
 
-        If Idx > XMLLen Then
-            Err.Raise 135, "XMLConverter", ErrorStr("Expecting ' ' or '>'")
-        End If
+	If Idx > XMLLen Then
+	    Err.Raise 135, "XMLConverter", ErrorStr("Expecting ' ' or '>'")
+	End If
     Loop
 End Function
 
@@ -323,22 +323,22 @@ Private Function ParseEndTag() As Variant
 
     pos = Idx
     Do While Idx > 0 And Idx <= XMLLen
-        Ch = Mid$(XMLStr, Idx, 1)
+	Ch = Mid$(XMLStr, Idx, 1)
 
-        Select Case Ch
-        Case "<"
-            Err.Raise 136, "XMLConverter", ErrorStr("Expecting ' ' or '>'")
-        Case " ", ">", "/"
-            ParseEndTag = Mid$(XMLStr, pos, Idx - pos)
+	Select Case Ch
+	Case "<"
+	    Err.Raise 136, "XMLConverter", ErrorStr("Expecting ' ' or '>'")
+	Case " ", ">", "/"
+	    ParseEndTag = Mid$(XMLStr, pos, Idx - pos)
 
-            SkipSpaces
-            Exit Do
-        Case Else
-            If Not IsValidName(Ch, Idx - pos + 1) Then
-                Err.Raise 137, "XMLConverter", ErrorStr("Invalid Character '" & Ch & "'")
-            End If
-            Idx = Idx + 1
-        End Select
+	    SkipSpaces
+	    Exit Do
+	Case Else
+	    If Not IsValidName(Ch, Idx - pos + 1) Then
+		Err.Raise 137, "XMLConverter", ErrorStr("Invalid Character '" & Ch & "'")
+	    End If
+	    Idx = Idx + 1
+	End Select
     Loop
 End Function
 
@@ -355,31 +355,31 @@ Private Function ParseAttributes() As Scripting.Dictionary
     Quote = ""
     pos = Idx
     Do While Idx > 0 And Idx <= XMLLen
-        Ch = Mid$(XMLStr, Idx, 1)
+	Ch = Mid$(XMLStr, Idx, 1)
 
-        Select Case Ch
-        Case "="    'found end of attribute name
-            Name = Mid$(XMLStr, pos, Idx - pos)   'extract name, skip =, reset start index, and check for quote
+	Select Case Ch
+	Case "="    'found end of attribute name
+	    Name = Mid$(XMLStr, pos, Idx - pos)   'extract name, skip =, reset start index, and check for quote
 
-            Idx = Idx + 1
+	    Idx = Idx + 1
 
-            Value = ParseString()
-            ParseAttributes.Add Name, Value     'store name, value
-        Case " ", ">", "/"
-            If Ch = "/" And Mid$(XMLStr, Idx, 2) <> "/>" Then
-                Idx = Idx + 1       'just a simple escape
-            Else
-                If Ch = ">" Or Ch = "/" Then
-                    Exit Do
-                Else
-                    Idx = Idx + 1
-                    SkipSpaces
-                    pos = Idx
-                End If
-            End If
-        Case Else
-            Idx = Idx + 1
-        End Select
+	    Value = ParseString()
+	    ParseAttributes.Add Name, Value     'store name, value
+	Case " ", ">", "/"
+	    If Ch = "/" And Mid$(XMLStr, Idx, 2) <> "/>" Then
+		Idx = Idx + 1       'just a simple escape
+	    Else
+		If Ch = ">" Or Ch = "/" Then
+		    Exit Do
+		Else
+		    Idx = Idx + 1
+		    SkipSpaces
+		    pos = Idx
+		End If
+	    End If
+	Case Else
+	    Idx = Idx + 1
+	End Select
     Loop
 End Function
 
@@ -392,22 +392,22 @@ Private Function ParseContent() As Variant
 
     ParseContent = ""
     Do While Idx > 0 And Idx <= XMLLen
-        Ch = Mid$(XMLStr, Idx, 1)
+	Ch = Mid$(XMLStr, Idx, 1)
 
-        Select Case Ch
-        Case "<"
-            If Not ParseCData(Buffer) Then
-                ParseContent = Buffer.Value
-                Exit Do
-            End If
-        Case Else
-            If OptionExpandEntities Then
-                ParseChar Ch, Buffer, unescbuf, isBuffering       'is slow
-            Else
-                Buffer.Append Ch
-                Idx = Idx + 1
-            End If
-        End Select
+	Select Case Ch
+	Case "<"
+	    If Not ParseCData(Buffer) Then
+		ParseContent = Buffer.Value
+		Exit Do
+	    End If
+	Case Else
+	    If OptionExpandEntities Then
+		ParseChar Ch, Buffer, unescbuf, isBuffering       'is slow
+	    Else
+		Buffer.Append Ch
+		Idx = Idx + 1
+	    End If
+	End Select
     Loop
 End Function
 
@@ -418,23 +418,23 @@ Private Function ParseCData(ByRef Buffer As CBuffer) As Boolean
     ParseCData = (Mid$(XMLStr, Idx, 9) = "<![CDATA[")
 
     If ParseCData Then
-        Closed = False
-        Do While Idx > 0 And Idx <= XMLLen
-            Ch = Mid$(XMLStr, Idx, 1)
+	Closed = False
+	Do While Idx > 0 And Idx <= XMLLen
+	    Ch = Mid$(XMLStr, Idx, 1)
 
-            If Mid$(XMLStr, Idx, 3) = "]]>" Then
-                Idx = Idx + 3
-                Closed = True
-                Exit Do
-            Else
-                Buffer.Append Ch
-                Idx = Idx + 1
-            End If
-        Loop
+	    If Mid$(XMLStr, Idx, 3) = "]]>" Then
+		Idx = Idx + 3
+		Closed = True
+		Exit Do
+	    Else
+		Buffer.Append Ch
+		Idx = Idx + 1
+	    End If
+	Loop
 
-        If Not Closed Then
-            Err.Raise 138, "XMLConverter", ErrorStr("Expecting ']]>'")
-        End If
+	If Not Closed Then
+	    Err.Raise 138, "XMLConverter", ErrorStr("Expecting ']]>'")
+	End If
     End If
 End Function
 
@@ -446,100 +446,100 @@ Private Function ParseString() As String
 
     Quote = Mid$(XMLStr, Idx, 1)
     If Quote <> """" And Quote <> "'" Then
-        Err.Raise 139, "XMLConverter", ErrorStr("Expecting '""' or '''")
-        Exit Function
+	Err.Raise 139, "XMLConverter", ErrorStr("Expecting '""' or '''")
+	Exit Function
     End If
 
     Idx = Idx + 1
     pos = Idx
 
     Do While Idx > 0 And Idx <= XMLLen
-        Ch = Mid$(XMLStr, Idx, 1)
+	Ch = Mid$(XMLStr, Idx, 1)
 
-        Select Case Ch
-        Case Quote
-            ParseString = Buffer.Value
-            Idx = Idx + 1   'skip quote
-            Exit Do
-        Case Else
-            If OptionExpandEntities Then
-                ParseChar Ch, Buffer, unescbuf, isBuffering       'is slower
-            Else
-                Buffer.Append Ch
-                Idx = Idx + 1
-            End If
-        End Select
+	Select Case Ch
+	Case Quote
+	    ParseString = Buffer.Value
+	    Idx = Idx + 1   'skip quote
+	    Exit Do
+	Case Else
+	    If OptionExpandEntities Then
+		ParseChar Ch, Buffer, unescbuf, isBuffering       'is slower
+	    Else
+		Buffer.Append Ch
+		Idx = Idx + 1
+	    End If
+	End Select
     Loop
 
     If Idx > XMLLen Then
-        Err.Raise 141, "XMLConverter", ErrorStr("Expecting '""' or '''")
+	Err.Raise 141, "XMLConverter", ErrorStr("Expecting '""' or '''")
     End If
 End Function
 
 Private Sub ParseChar(Ch As String, ByRef Buffer As CBuffer, ByRef unescbuf As String, ByRef isBuffering As Boolean)
     If Ch = "&" Then
-        If isBuffering Then         'hit a second '&' before a ';'
-            Buffer.Append unescbuf  'should be an error - not a know entity
-        End If
+	If isBuffering Then         'hit a second '&' before a ';'
+	    Buffer.Append unescbuf  'should be an error - not a know entity
+	End If
 
-        unescbuf = Ch
-        Idx = Idx + 1
-        isBuffering = True
+	unescbuf = Ch
+	Idx = Idx + 1
+	isBuffering = True
 
     ElseIf Ch = ";" And isBuffering Then
-        unescbuf = unescbuf & Ch
-        Idx = Idx + 1
+	unescbuf = unescbuf & Ch
+	Idx = Idx + 1
 
-        If unescbuf = "&amp;" Then     'order to unescape &amp; does not matter when not replacing
-            Buffer.Append "&"
-        ElseIf unescbuf = "&lt;" Then
-            Buffer.Append "<"
-        ElseIf unescbuf = "&gt;" Then
-            Buffer.Append ">"
-        ElseIf unescbuf = "&quot;" Then
-            Buffer.Append """"
-        ElseIf unescbuf = "&apos;" Then
-            Buffer.Append "'"
-        ElseIf Mid$(unescbuf, 1, 2) = "&#" Then
-            If Mid$(unescbuf, 3, 1) = "x" Then
-                Buffer.Append ChrW(CLng("&H" & Mid$(unescbuf, 4, Len(unescbuf) - 3 - 1)))     'hexadecimal
-            Else
-                Buffer.Append ChrW(CLng(Mid$(unescbuf, 3, Len(unescbuf) - 2 - 1)))            'decimal
-            End If
-        Else
-            Buffer.Append unescbuf  'not a known entity
-        End If
+	If unescbuf = "&amp;" Then     'order to unescape &amp; does not matter when not replacing
+	    Buffer.Append "&"
+	ElseIf unescbuf = "&lt;" Then
+	    Buffer.Append "<"
+	ElseIf unescbuf = "&gt;" Then
+	    Buffer.Append ">"
+	ElseIf unescbuf = "&quot;" Then
+	    Buffer.Append """"
+	ElseIf unescbuf = "&apos;" Then
+	    Buffer.Append "'"
+	ElseIf Mid$(unescbuf, 1, 2) = "&#" Then
+	    If Mid$(unescbuf, 3, 1) = "x" Then
+		Buffer.Append ChrW(CLng("&H" & Mid$(unescbuf, 4, Len(unescbuf) - 3 - 1)))     'hexadecimal
+	    Else
+		Buffer.Append ChrW(CLng(Mid$(unescbuf, 3, Len(unescbuf) - 2 - 1)))            'decimal
+	    End If
+	Else
+	    Buffer.Append unescbuf  'not a known entity
+	End If
 
-        unescbuf = ""
-        isBuffering = False
+	unescbuf = ""
+	isBuffering = False
 
     ElseIf isBuffering Then
-        unescbuf = unescbuf & Ch
-        Idx = Idx + 1
+	unescbuf = unescbuf & Ch
+	Idx = Idx + 1
 
-        If Len(unescbuf) > 10 Then     'it's to long
-            Buffer.Append unescbuf     'should be an error - not a know entity
+	If Len(unescbuf) > 10 Then     'it's to long
+	    Buffer.Append unescbuf     'should be an error - not a know entity
 
-            unescbuf = ""
-            isBuffering = False
-        End If
+	    unescbuf = ""
+	    isBuffering = False
+	End If
     Else
-        Buffer.Append Ch
-        Idx = Idx + 1
+	Buffer.Append Ch
+	Idx = Idx + 1
     End If
 End Sub
 
 Private Function IsSpace(Ch As String) As Boolean
     IsSpace = (Ch = " " Or Ch = vbLf Or Ch = vbCr Or Ch = vbTab)
     If Ch = vbLf Then       'covers both CRLF and LF
-        LineNum = LineNum + 1
-        LineCol = Idx + 1
+	LineNum = LineNum + 1
+	LineCol = Idx + 1
     End If
 End Function
 
 Private Sub SkipSpaces()
     Do While Idx > 0 And Idx <= XMLLen And IsSpace(Mid$(XMLStr, Idx, 1))
-        Idx = Idx + 1
+	Idx = Idx + 1
     Loop
 
     If OptionAllowEvents Then DoEvents
@@ -547,10 +547,10 @@ End Sub
 
 Public Function IsValidName(ByRef Ch As String, ByVal pos As Long) As Boolean
     Select Case Asc(Ch)
-        Case 65 To 90, 97 To 122, 95            'always valid is 'A'-'Z', 'a'-'z', '_'
-            IsValidName = True
-        Case 48 To 57, 45, 46
-            If pos > 1 Then IsValidName = True  'valid when not first is '0'-'9', '-', '.'
+	Case 65 To 90, 97 To 122, 95            'always valid is 'A'-'Z', 'a'-'z', '_'
+	    IsValidName = True
+	Case 48 To 57, 45, 46
+	    If pos > 1 Then IsValidName = True  'valid when not first is '0'-'9', '-', '.'
     End Select
 End Function
 
@@ -561,10 +561,10 @@ Private Function ErrorStr(ErrorMessage As String)
     StartIndex = Idx - 50
     StopIndex = Idx + 50
     If StartIndex <= 0 Then
-        StartIndex = 1
+	StartIndex = 1
     End If
     If StopIndex > XMLLen Then
-        StopIndex = XMLLen
+	StopIndex = XMLLen
     End If
 
     Out = Mid$(XMLStr, StartIndex, StopIndex - StartIndex + 1)
@@ -577,9 +577,9 @@ Private Function ErrorStr(ErrorMessage As String)
     'Expecting '</abc>'
 
     ErrorStr = "Error parsing XML:" & vbLf & _
-                         Out & vbLf & _
-                         Space(Idx - StartIndex) & "^" & vbLf & _
-                         ErrorMessage & " at line " & LineNum & ", colunm " & Idx - LineCol + 1 & ", position " & Idx
+			 Out & vbLf & _
+			 Space(Idx - StartIndex) & "^" & vbLf & _
+			 ErrorMessage & " at line " & LineNum & ", colunm " & Idx - LineCol + 1 & ", position " & Idx
 End Function
 
 '################### Get/Let Properties ####################

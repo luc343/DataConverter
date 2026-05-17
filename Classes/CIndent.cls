@@ -61,9 +61,9 @@ Public Function FormatFile(Result As Object, ByVal filePath As String) As Boolea
     Set FSO = New FileSystemObject
 
     If Not FSO.FileExists(filePath) Then
-        Set TS = FSO.CreateTextFile(filePath)
+	Set TS = FSO.CreateTextFile(filePath)
     Else
-        Set TS = FSO.OpenTextFile(filePath, ForAppending, TristateTrue)
+	Set TS = FSO.OpenTextFile(filePath, ForAppending, TristateTrue)
     End If
 
     TS.WriteLine ""
@@ -98,54 +98,54 @@ Private Sub FormatEx(ByVal Result As Object, ByVal Idx As Long, ByRef Buffer As 
 
     keyType = TypeName(Result)
     If keyType = "Dictionary" Then
-        For Each Key In Result.Keys
-            keyType = TypeName(Result(Key))
+	For Each Key In Result.Keys
+	    keyType = TypeName(Result(Key))
 
-            If keyType = "Dictionary" Then
-                Buffer.Append Space(Idx) & Key & ": " & vbLf
-                FormatEx Result(Key), Idx + IndentNum, Buffer
-            ElseIf keyType = "Collection" Then
-                Buffer.Append Space(Idx) & Key & ": " & vbLf
-                FormatEx Result(Key), Idx + IndentNum, Buffer
-            Else
-                Buffer.Append Space(Idx) & Key & IIf(OptionOutputTypeNames, " (" & keyType & "): ", ": ") & JsonValue(Result(Key)) & vbLf
-            End If
+	    If keyType = "Dictionary" Then
+		Buffer.Append Space(Idx) & Key & ": " & vbLf
+		FormatEx Result(Key), Idx + IndentNum, Buffer
+	    ElseIf keyType = "Collection" Then
+		Buffer.Append Space(Idx) & Key & ": " & vbLf
+		FormatEx Result(Key), Idx + IndentNum, Buffer
+	    Else
+		Buffer.Append Space(Idx) & Key & IIf(OptionOutputTypeNames, " (" & keyType & "): ", ": ") & JsonValue(Result(Key)) & vbLf
+	    End If
 
-            If OptionAllowEvents Then DoEvents
-        Next Key
+	    If OptionAllowEvents Then DoEvents
+	Next Key
     ElseIf keyType = "Collection" Then
-        For i = 1 To Result.Count
-            keyType = TypeName(Result(i))
+	For i = 1 To Result.Count
+	    keyType = TypeName(Result(i))
 
-            If keyType = "Dictionary" Then
-                Buffer.Append Space(Idx) & i & ": " & vbLf
-                FormatEx Result(i), Idx + IndentNum, Buffer
-            ElseIf keyType = "Collection" Then
-                Buffer.Append Space(Idx) & i & ": " & vbLf
-                FormatEx Result(i), Idx + IndentNum, Buffer
-            Else
-                Buffer.Append Space(Idx) & i & IIf(OptionOutputTypeNames, " (" & keyType & "): ", ": ") & JsonValue(Result(i)) & vbLf
-            End If
+	    If keyType = "Dictionary" Then
+		Buffer.Append Space(Idx) & i & ": " & vbLf
+		FormatEx Result(i), Idx + IndentNum, Buffer
+	    ElseIf keyType = "Collection" Then
+		Buffer.Append Space(Idx) & i & ": " & vbLf
+		FormatEx Result(i), Idx + IndentNum, Buffer
+	    Else
+		Buffer.Append Space(Idx) & i & IIf(OptionOutputTypeNames, " (" & keyType & "): ", ": ") & JsonValue(Result(i)) & vbLf
+	    End If
 
-            If OptionAllowEvents Then DoEvents
-        Next i
+	    If OptionAllowEvents Then DoEvents
+	Next i
     End If
 End Sub
 
 Private Function JsonValue(ByVal Val As Variant) As String
     Select Case VarType(Val)
-        Case vbString
-            JsonValue = """" & Val & """"         'add quotes so you can see empty strings
-        Case vbBoolean
-            JsonValue = LCase$(CStr(Val))          'match json lowercase standard
-        Case vbNull
-            JsonValue = "null"
-        Case Else
-            If IsEmpty(Val) Then
-                JsonValue = "undefined"
-            Else
-                JsonValue = CStr(Val)
-            End If
+	Case vbString
+	    JsonValue = """" & Val & """"         'add quotes so you can see empty strings
+	Case vbBoolean
+	    JsonValue = LCase$(CStr(Val))          'match json lowercase standard
+	Case vbNull
+	    JsonValue = "null"
+	Case Else
+	    If IsEmpty(Val) Then
+		JsonValue = "undefined"
+	    Else
+		JsonValue = CStr(Val)
+	    End If
     End Select
 End Function
 

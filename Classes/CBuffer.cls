@@ -44,10 +44,10 @@ Public Sub Append(Str As Variant)
     RequiredLen = AppendLen + BufPos
 
     If RequiredLen > BufLen Then
-        AddedLen = IIf(AppendLen > BufLen, AppendLen, BufLen)   'at least double buffer space
+	AddedLen = IIf(AppendLen > BufLen, AppendLen, BufLen)   'at least double buffer space
 
-        Buf = Buf & Space(AddedLen)
-        BufLen = BufLen + AddedLen
+	Buf = Buf & Space(AddedLen)
+	BufLen = BufLen + AddedLen
     End If
 
     Mid$(Buf, BufPos + 1, AppendLen) = CStr(Str)
@@ -59,13 +59,13 @@ End Sub
 'Value
 Public Property Get Value() As Variant
     If BufPos > 0 Then
-        Value = Left$(Buf, BufPos)
+	Value = Left$(Buf, BufPos)
     End If
 End Property
 
 Public Property Let Value(Str As Variant)
     BufPos = 0  'keep exiting buffer space
     If Len(Str) > 0 Then
-        Append Str
+	Append Str
     End If
 End Property

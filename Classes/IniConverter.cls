@@ -73,22 +73,22 @@ Public Function Parse(ByVal IniString As String) As Object
 
     On Error GoTo Err
     While Idx <= IniLen
-        If Mid$(IniStr, Idx, 1) <> "[" Then
-            SecName = "Global"
-            SkipSpaces
-        Else
-            SecName = ParseSection()
-        End If
-        Set Properties = ParseProperties()
+	If Mid$(IniStr, Idx, 1) <> "[" Then
+	    SecName = "Global"
+	    SkipSpaces
+	Else
+	    SecName = ParseSection()
+	End If
+	Set Properties = ParseProperties()
 
-        If Parse.Exists(SecName) Then
-            For Each Key In Properties.Keys
-                Parse.Item(SecName)(Key) = Properties(Key)      'will overwrite an exist key
-            Next Key
-        Else
-            Parse.Add SecName, Properties
-        End If
-        SkipBlanks
+	If Parse.Exists(SecName) Then
+	    For Each Key In Properties.Keys
+		Parse.Item(SecName)(Key) = Properties(Key)      'will overwrite an exist key
+	    Next Key
+	Else
+	    Parse.Add SecName, Properties
+	End If
+	SkipBlanks
     Wend
     On Error GoTo 0
     Exit Function
@@ -118,7 +118,7 @@ Public Function ParseFile(ByVal filePath As String) As Object
 
     On Error GoTo Err
     If Not FileExists(filePath) Then
-        Err.Raise 150, "IniConverter", "Path '" & filePath & "' not found!"
+	Err.Raise 150, "IniConverter", "Path '" & filePath & "' not found!"
     End If
     On Error GoTo 0
 
@@ -145,50 +145,50 @@ Private Function ParseSection() As String
 
     ParseSection = ""
     Do While Idx > 0 And Idx <= IniLen
-        Ch = Mid$(IniStr, Idx, 1)
+	Ch = Mid$(IniStr, Idx, 1)
 
-        Select Case Ch
-        Case ";", "#"
-            If InName Then
-                Err.Raise 151, "IniConverter", ErrorStr("Expecting ']'")
-            End If
+	Select Case Ch
+	Case ";", "#"
+	    If InName Then
+		Err.Raise 151, "IniConverter", ErrorStr("Expecting ']'")
+	    End If
 
-            Idx = Idx + 1
-            SkipComment
-        Case vbLf, vbCr
-            If ParseSection = "" Then
-                Err.Raise 152, "IniConverter", ErrorStr("Expecting '[' or ']'")
-            End If
+	    Idx = Idx + 1
+	    SkipComment
+	Case vbLf, vbCr
+	    If ParseSection = "" Then
+		Err.Raise 152, "IniConverter", ErrorStr("Expecting '[' or ']'")
+	    End If
 
-            SkipNewline
-            Exit Do
-        Case "["
-            InName = True
-            Idx = Idx + 1
-            pos = Idx
-        Case "]"
-            If InName Then
-                If Idx - pos = 0 Then
-                    Err.Raise 153, "IniConverter", ErrorStr("Expecting 'CHARACTOR'")
-                End If
-                ParseSection = Mid$(IniStr, pos, Idx - pos)
-                InName = False
-                Idx = Idx + 1
-                SkipSpaces
-            Else
-                Err.Raise 154, "IniConverter", ErrorStr("Expecting '['")
-            End If
-        Case Else
-            If InName Then
-                Idx = Idx + 1
-            Else
-                Err.Raise 155, "IniConverter", ErrorStr("Expecting 'CR', 'LF', ':' or '#'")
-            End If
-        End Select
+	    SkipNewline
+	    Exit Do
+	Case "["
+	    InName = True
+	    Idx = Idx + 1
+	    pos = Idx
+	Case "]"
+	    If InName Then
+		If Idx - pos = 0 Then
+		    Err.Raise 153, "IniConverter", ErrorStr("Expecting 'CHARACTOR'")
+		End If
+		ParseSection = Mid$(IniStr, pos, Idx - pos)
+		InName = False
+		Idx = Idx + 1
+		SkipSpaces
+	    Else
+		Err.Raise 154, "IniConverter", ErrorStr("Expecting '['")
+	    End If
+	Case Else
+	    If InName Then
+		Idx = Idx + 1
+	    Else
+		Err.Raise 155, "IniConverter", ErrorStr("Expecting 'CR', 'LF', ':' or '#'")
+	    End If
+	End Select
     Loop
 
     If Idx > IniLen And ParseSection = "" Then
-        Err.Raise 156, "IniConverter", ErrorStr("Expecting ']'")
+	Err.Raise 156, "IniConverter", ErrorStr("Expecting ']'")
     End If
 End Function
 
@@ -200,14 +200,14 @@ Private Function ParseProperties() As Scripting.Dictionary
     SkipBlanks
 
     Do While Idx > 0 And Idx <= IniLen
-        Ch = Mid$(IniStr, Idx, 1)
+	Ch = Mid$(IniStr, Idx, 1)
 
-        If Ch = "[" Then
-            Exit Do
-        Else
-            ParseProperty ParseProperties
-            SkipBlanks
-        End If
+	If Ch = "[" Then
+	    Exit Do
+	Else
+	    ParseProperty ParseProperties
+	    SkipBlanks
+	End If
     Loop
 End Function
 
@@ -220,63 +220,63 @@ Private Function ParseProperty(ByRef Properties As Scripting.Dictionary)
     posKey = Idx
     posVal = 0
     Do While Idx > 0 And Idx <= IniLen
-        Ch = Mid$(IniStr, Idx, 1)
+	Ch = Mid$(IniStr, Idx, 1)
 
-        Select Case Ch
-        Case "["
-            Exit Do
-        Case ";", "#"
-            Idx = Idx + 1
-            SkipComment
-        Case vbLf, vbCr
-            If InKey Then   'there was no =
-                Key = Mid$(IniStr, posKey, Idx - posKey)
-                If Key = "" Then
-                    Err.Raise 157, "IniConverter", ErrorStr("Expecting 'CHARACTER'")
-                End If
-            End If
+	Select Case Ch
+	Case "["
+	    Exit Do
+	Case ";", "#"
+	    Idx = Idx + 1
+	    SkipComment
+	Case vbLf, vbCr
+	    If InKey Then   'there was no =
+		Key = Mid$(IniStr, posKey, Idx - posKey)
+		If Key = "" Then
+		    Err.Raise 157, "IniConverter", ErrorStr("Expecting 'CHARACTER'")
+		End If
+	    End If
 
-            Value = ""
-            If posVal <> 0 Then
-                Value = Mid$(IniStr, posVal, Idx - posVal)
-            End If
-            Properties.Item(Trim$(Key)) = Value
+	    Value = ""
+	    If posVal <> 0 Then
+		Value = Mid$(IniStr, posVal, Idx - posVal)
+	    End If
+	    Properties.Item(Trim$(Key)) = Value
 
-            SkipBlanks
-            InKey = True
-            posKey = Idx
-            posVal = 0
-        Case "="
-            If InKey Then
-                Key = Mid$(IniStr, posKey, Idx - posKey)
-                If Key = "" Then
-                    Err.Raise 158, "IniConverter", ErrorStr("Expecting 'CHARACTER'")
-                End If
+	    SkipBlanks
+	    InKey = True
+	    posKey = Idx
+	    posVal = 0
+	Case "="
+	    If InKey Then
+		Key = Mid$(IniStr, posKey, Idx - posKey)
+		If Key = "" Then
+		    Err.Raise 158, "IniConverter", ErrorStr("Expecting 'CHARACTER'")
+		End If
 
-                InKey = False
-                Idx = Idx + 1
-                posVal = Idx
-            Else
-                Idx = Idx + 1
-            End If
-        Case Else
-            Idx = Idx + 1
-        End Select
+		InKey = False
+		Idx = Idx + 1
+		posVal = Idx
+	    Else
+		Idx = Idx + 1
+	    End If
+	Case Else
+	    Idx = Idx + 1
+	End Select
     Loop
 
     If Idx > IniLen And posKey <= IniLen Then       'line did not end in CR or LF
-        If InKey Then
-            Key = Mid$(IniStr, posKey, Idx - posKey)
-            If Key = "" Then
-                Err.Raise 159, "IniConverter", ErrorStr("Expecting 'CHARACTER'")
-            End If
-        End If
+	If InKey Then
+	    Key = Mid$(IniStr, posKey, Idx - posKey)
+	    If Key = "" Then
+		Err.Raise 159, "IniConverter", ErrorStr("Expecting 'CHARACTER'")
+	    End If
+	End If
 
-        Value = ""
-        If posVal <> 0 Then
-            Value = Mid$(IniStr, posVal, Idx - posVal)
-        End If
-        Properties.Item(Trim$(Key)) = Value
+	Value = ""
+	If posVal <> 0 Then
+	    Value = Mid$(IniStr, posVal, Idx - posVal)
+	End If
+	Properties.Item(Trim$(Key)) = Value
     End If
 End Function
 
@@ -286,7 +286,7 @@ End Function
 
 Private Sub SkipSpaces()
     Do While Idx > 0 And Idx <= IniLen And IsSpace(Mid$(IniStr, Idx, 1))
-        Idx = Idx + 1
+	Idx = Idx + 1
     Loop
 
     If OptionAllowEvents Then DoEvents
@@ -295,14 +295,14 @@ End Sub
 Private Function IsNewline(Ch As String) As Boolean
     IsNewline = (Ch = vbLf Or Ch = vbCr)
     If Ch = vbLf Then       'covers both CRLF and LF
-        LineNum = LineNum + 1
-        LineCol = Idx + 1
+	LineNum = LineNum + 1
+	LineCol = Idx + 1
     End If
 End Function
 
 Private Sub SkipNewline()
     Do While Idx > 0 And Idx <= IniLen And IsNewline(Mid$(IniStr, Idx, 1))
-        Idx = Idx + 1
+	Idx = Idx + 1
     Loop
 
     If OptionAllowEvents Then DoEvents
@@ -310,7 +310,7 @@ End Sub
 
 Private Sub SkipComment()
     Do While Idx > 0 And Idx <= IniLen And Not IsNewline(Mid$(IniStr, Idx, 1))
-        Idx = Idx + 1
+	Idx = Idx + 1
     Loop
 
     If OptionAllowEvents Then DoEvents
@@ -322,18 +322,18 @@ Private Sub SkipBlanks()
 
     Done = False
     Do While Idx > 0 And Idx <= IniLen And Not Done
-        SkipSpaces
+	SkipSpaces
 
-        Ch = Mid$(IniStr, Idx, 1)
-        If Ch = ";" Or Ch = "#" Then
-            Idx = Idx + 1
-            SkipComment
-        End If
-        If IsNewline(Mid$(IniStr, Idx, 1)) Then
-            SkipNewline
-        Else
-            Exit Do
-        End If
+	Ch = Mid$(IniStr, Idx, 1)
+	If Ch = ";" Or Ch = "#" Then
+	    Idx = Idx + 1
+	    SkipComment
+	End If
+	If IsNewline(Mid$(IniStr, Idx, 1)) Then
+	    SkipNewline
+	Else
+	    Exit Do
+	End If
     Loop
 End Sub
 
@@ -344,10 +344,10 @@ Private Function ErrorStr(ErrorMessage As String)
     StartIndex = Idx - 50
     StopIndex = Idx + 50
     If StartIndex <= 0 Then
-        StartIndex = 1
+	StartIndex = 1
     End If
     If StopIndex > IniLen Then
-        StopIndex = IniLen
+	StopIndex = IniLen
     End If
 
     Out = Mid$(IniStr, StartIndex, StopIndex - StartIndex + 1)
@@ -360,9 +360,9 @@ Private Function ErrorStr(ErrorMessage As String)
     'Expecting 'CR' or 'LF' at index 11
 
     ErrorStr = "Error parsing Ini:" & vbLf & _
-                         Out & vbLf & _
-                         Space(Idx - StartIndex) & "^" & vbLf & _
-                         ErrorMessage & " at line " & LineNum & ", colunm " & Idx - LineCol + 1 & ", position " & Idx
+			 Out & vbLf & _
+			 Space(Idx - StartIndex) & "^" & vbLf & _
+			 ErrorMessage & " at line " & LineNum & ", colunm " & Idx - LineCol + 1 & ", position " & Idx
 End Function
 
 '################### Get/Let Properties ####################

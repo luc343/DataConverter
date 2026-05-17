@@ -25,23 +25,23 @@ Private Sub UserForm_Initialize()
     Dim hwnd As LongPtr
 
     With ErrorForm
-        .Height = 160.25        'fix screen driver issue
-        .Width = 568.25
+	.Height = 160.25        'fix screen driver issue
+	.Width = 568.25
 
-        .WhiteBg.Width = .Width
+	.WhiteBg.Width = .Width
 
-        .StartUpPosition = 0    'allow manual positioning
+	.StartUpPosition = 0    'allow manual positioning
 
-        hwnd = FindWindow("ThunderDFrame", .Caption)
-        CentreUserForm hwnd
+	hwnd = FindWindow("ThunderDFrame", .Caption)
+	CentreUserForm hwnd
     End With
 End Sub
 
 Public Sub UserForm_Show(ByVal ErrNum As Long, ByVal ErrMod As String, ByVal ErrDesc As String)
     With ErrorForm
-        .ErrorNum.Value = "Run-time error '" & ErrNum & "':"
-        .ErrorDesc.Value = ErrDesc
-        .Caption = ErrMod & " Error"
+	.ErrorNum.Value = "Run-time error '" & ErrNum & "':"
+	.ErrorDesc.Value = ErrDesc
+	.Caption = ErrMod & " Error"
     End With
 
     ErrorForm.Show
